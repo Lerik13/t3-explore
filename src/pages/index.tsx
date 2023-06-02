@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Image from "next/image";
 import { type NextPage } from "next";
 import Head from "next/head";
@@ -14,7 +15,18 @@ dayjs.extend(relativeTime)
 
 const CreatePostWizard = () => {
 	const { user } = useUser();
-	console.log(user.id)
+
+	const [input, setInput] = useState("")
+	
+	const ctx = api.useContext()
+
+	const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+		onSuccess: () => {
+			setInput("");
+			void ctx.posts.getAll.invalidate();
+		}
+	})
+
 	if (!user) return null;
 
 	return <div className="flex gap-3 w-full">
@@ -25,7 +37,15 @@ const CreatePostWizard = () => {
 			width={56}
 			height={56}
 		/>
-		<input placeholder="Type some emojis!" className="grow bg-transparent outline-none" />
+		<input
+			placeholder="Type some emojis!"
+			className="grow bg-transparent outline-none"
+			type="text"
+			value={input}
+			onChange={(e) => setInput(e.target.value)}
+			disabled={isPosting}
+		/>
+		<button onClick={() => mutate({ content: input })}>Post</button>
 	</div>
 }
 
@@ -63,7 +83,7 @@ const Feed = () => {
 
 	return (
 		<div className="flex flex-col">
-			{data?.map((fullPost) => (
+			{data.map((fullPost) => (
 				<PostView {...fullPost} key={fullPost.post.id} />
 			))}
 		</div>
