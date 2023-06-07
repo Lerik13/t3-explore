@@ -6,13 +6,6 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import superjson from "superjson";
-import { ZodError } from "zod";
-import { prisma } from "~/server/db";
-import { getAuth } from "@clerk/nextjs/server";
-import { TRPCError } from "@trpc/server";
 
 /**
  * 1. CONTEXT
@@ -21,6 +14,9 @@ import { TRPCError } from "@trpc/server";
  *
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
+
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { prisma } from "~/server/db";
 
 type CreateContextOptions = Record<string, never>;
 
@@ -49,6 +45,10 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
+import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
+import { getAuth } from "@clerk/nextjs/server";
+import { ZodError } from "zod";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
