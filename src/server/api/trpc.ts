@@ -12,6 +12,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { prisma } from "~/server/db";
 import { getAuth } from "@clerk/nextjs/server";
+import { TRPCError } from "@trpc/server";
 
 /**
  * 1. CONTEXT
